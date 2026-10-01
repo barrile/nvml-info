@@ -120,6 +120,24 @@ except StopIteration:
 
 ## Examples
 
+Runnable scripts live in [`examples/`](examples/). Each one isolates a
+single piece of the API so you can `uv run examples/<file>.py` and
+see what it does.
+
+| Script | Covers |
+| --- | --- |
+| [`examples/check_availability.py`](examples/check_availability.py) | `CUDA.is_available()` |
+| [`examples/list_gpus.py`](examples/list_gpus.py) | `CUDA()`, `cuda.devices`, `cuda.device_count`, `GPU.id/uuid/name/free_memory_mb/total_memory_mb/utilization_rates` |
+| [`examples/find_gpu.py`](examples/find_gpu.py) | `cuda.get_available_GPU(min_memory)` |
+| [`examples/gpu_identity.py`](examples/gpu_identity.py) | `GPU.__str__/__eq__/__hash__` (sets, dict keys) |
+| [`examples/device_request.py`](examples/device_request.py) | `Device` pydantic model |
+
+Run any of them with:
+
+```bash
+uv run examples/list_gpus.py
+```
+
 ### Find GPU with minimum memory
 
 ```python
