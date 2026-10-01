@@ -73,9 +73,11 @@ Represents a single NVIDIA GPU.
 - **`id: int`** — GPU index (0-based)
 - **`uuid: str`** — Unique UUID (NVIDIA driver assigned)
 - **`name: str`** — Human-readable name (e.g., "NVIDIA A100")
+- **`used_memory_mb: int`** — VRAM currently in use (MiB)
 - **`free_memory_mb: int`** — Current free VRAM in MiB
 - **`total_memory_mb: int`** — Total VRAM in MiB
-- **`utilization_rates: int`** — Current GPU utilization (0-100%)
+- **`memory_utilization: int`** — VRAM utilization (0-100%)
+- **`utilization_rates: int`** — Current GPU SM utilization (0-100%)
 
 #### Methods
 

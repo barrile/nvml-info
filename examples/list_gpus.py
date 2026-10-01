@@ -15,8 +15,10 @@ def main() -> None:
     for gpu in cuda.devices:
         print(f"[{gpu.id}] {gpu.name}")
         print(f"    uuid:             {gpu.uuid}")
+        print(f"    used memory:      {gpu.used_memory_mb} MiB")
         print(f"    free memory:      {gpu.free_memory_mb} MiB")
         print(f"    total memory:     {gpu.total_memory_mb} MiB")
+        print(f"    memory util:      {gpu.memory_utilization} %")
         print(f"    utilization:      {gpu.utilization_rates} %")
         print()
 

@@ -94,6 +94,42 @@ class _GPU:
 
         return mem.total // (2**20)
 
+    @property
+    def used_memory_mb(self) -> int:
+        """
+        Get the memory currently in use on the GPU.
+
+        Returns
+        -------
+        int
+            Used memory (size in MiB).
+        """
+        nvmlInit()
+        handle = nvmlDeviceGetHandleByUUID(self.uuid)
+        mem = nvmlDeviceGetMemoryInfo(handle)
+        nvmlShutdown()
+
+        return mem.used // (2**20)
+
+    @property
+    def memory_utilization(self) -> int:
+        """
+        Get the GPU memory utilization as a percentage.
+
+        Returns
+        -------
+        int
+            Memory utilization in per cent (0-100).
+        """
+        nvmlInit()
+        handle = nvmlDeviceGetHandleByUUID(self.uuid)
+        mem = nvmlDeviceGetMemoryInfo(handle)
+        nvmlShutdown()
+
+        if mem.total == 0:
+            return 0
+        return int(round(mem.used / mem.total * 100))
+
     def _get_utilization_rates(self) -> int:
         """
         Get the utilization rate of the GPU in the last second.

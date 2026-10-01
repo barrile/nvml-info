@@ -74,6 +74,33 @@ class TestGPUQueries:
         assert isinstance(gpu.free_memory_mb, int)
         assert gpu.free_memory_mb >= 0
 
+    def test_gpu_used_memory_is_int(self, cuda_instance):
+        """used_memory_mb should return an integer in [0, total]."""
+        if cuda_instance is None or cuda_instance.device_count == 0:
+            pytest.skip("No GPUs available")
+
+        gpu = cuda_instance.devices[0]
+        assert isinstance(gpu.used_memory_mb, int)
+        assert 0 <= gpu.used_memory_mb <= gpu.total_memory_mb
+
+    def test_gpu_memory_utilization_in_range(self, cuda_instance):
+        """memory_utilization should be an integer 0-100."""
+        if cuda_instance is None or cuda_instance.device_count == 0:
+            pytest.skip("No GPUs available")
+
+        gpu = cuda_instance.devices[0]
+        assert isinstance(gpu.memory_utilization, int)
+        assert 0 <= gpu.memory_utilization <= 100
+
+    def test_gpu_used_plus_free_equals_total(self, cuda_instance):
+        """used + free should account for total VRAM within driver slack."""
+        if cuda_instance is None or cuda_instance.device_count == 0:
+            pytest.skip("No GPUs available")
+
+        gpu = cuda_instance.devices[0]
+        # Allow up to a few MiB slack for NVML reserved-but-unallocated pages
+        assert abs((gpu.used_memory_mb + gpu.free_memory_mb) - gpu.total_memory_mb) <= 4
+
     def test_gpu_total_memory_is_int(self, cuda_instance):
         """total_memory_mb should return an integer."""
         if cuda_instance is None or cuda_instance.device_count == 0:
