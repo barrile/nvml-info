@@ -7,6 +7,12 @@ Thin, Pythonic wrapper around `pynvml` for discovering and querying NVIDIA GPUs.
 ## Installation
 
 ```bash
+uv add nvml-info
+```
+
+Or with pip:
+
+```bash
 pip install nvml-info
 ```
 
@@ -153,14 +159,25 @@ No GPU is required to import; methods will raise if driver is unavailable.
 
 ## Testing
 
-Run tests with pytest:
+Run tests with `uv`:
 
 ```bash
-pytest tests/
-pytest tests/ --cov=nvml_info  # with coverage
+uv run pytest tests/
+uv run pytest tests/ --cov=nvml_info  # with coverage
 ```
 
 Tests check CUDA availability and skip GPU-specific tests if no driver is found.
+
+## Development Setup
+
+```bash
+git clone https://github.com/yourusername/nvml-info.git
+cd nvml-info
+uv sync --extra dev          # install package + dev deps (pytest, ruff, mypy, black)
+uv run pytest                # run tests
+uv run ruff check src tests  # lint
+uv run mypy src              # type check
+```
 
 ## License
 

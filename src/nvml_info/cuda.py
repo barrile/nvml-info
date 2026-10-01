@@ -75,12 +75,11 @@ class CUDA:
         StopIteration
             If no GPU is available.
         """
-        base_cond = (
-            lambda gpu: (gpu._get_free_memory()) / (2**20) >= min_memory
-            and gpu.utilization_rates < 50
-        )
+        def is_available(gpu: _GPU) -> bool:
+            free_mib = gpu._get_free_memory() / (2**20)
+            return free_mib >= min_memory and gpu.utilization_rates < 50
 
-        availables = [gpu for gpu in self.devices if base_cond(gpu)]
+        availables = [gpu for gpu in self.devices if is_available(gpu)]
         asc = sorted(availables, key=lambda gpu: gpu.utilization_rates)
 
         try:

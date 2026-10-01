@@ -15,20 +15,17 @@ git clone https://github.com/YOUR_USERNAME/nvml-info.git
 cd nvml-info
 ```
 
-### 2. Create a virtual environment
+### 2. Install with uv
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
 
 ```bash
-python3.12 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+uv sync --extra dev
 ```
 
-### 3. Install in dev mode
+This installs nvml-info + development tools (pytest, black, ruff, mypy) into a project-local `.venv`.
 
-```bash
-pip install -e ".[dev]"
-```
-
-This installs nvml-info + development tools (pytest, black, ruff, mypy).
+> Don't have uv? Install it with `curl -LsSf https://astral.sh/uv/install.sh | sh` or `pipx install uv`.
 
 ### 4. Create a branch
 
@@ -43,9 +40,9 @@ git checkout -b fix/your-bug-fix
 ### Run Tests
 
 ```bash
-pytest                          # Run all tests
-pytest tests/ -v                # Verbose output
-pytest tests/ --cov=nvml_info   # With coverage report
+uv run pytest                          # Run all tests
+uv run pytest tests/ -v                # Verbose output
+uv run pytest tests/ --cov=nvml_info   # With coverage report
 ```
 
 Tests gracefully skip GPU-specific tests if no NVIDIA driver is available.
@@ -53,23 +50,30 @@ Tests gracefully skip GPU-specific tests if no NVIDIA driver is available.
 ### Format & Lint
 
 ```bash
-black src/ tests/               # Format code
-ruff check src/ tests/          # Lint
-mypy src/                       # Type checking
+uv run black src/ tests/               # Format code
+uv run ruff check src/ tests/          # Lint
+uv run mypy src/                       # Type checking
 ```
 
 Or run all at once:
 
 ```bash
-black src/ tests/ && ruff check src/ tests/ && mypy src/
+uv run black src/ tests/ && uv run ruff check src/ tests/ && uv run mypy src/
+```
+
+### Adding Dependencies
+
+```bash
+uv add <package>                  # runtime dep
+uv add --dev <package>            # dev-only dep (pytest, ruff, etc.)
 ```
 
 ### Before Committing
 
-- [ ] All tests pass: `pytest`
-- [ ] Code formatted: `black src/ tests/`
-- [ ] No lint issues: `ruff check src/ tests/`
-- [ ] Type safe: `mypy src/`
+- [ ] All tests pass: `uv run pytest`
+- [ ] Code formatted: `uv run black src/ tests/`
+- [ ] No lint issues: `uv run ruff check src/ tests/`
+- [ ] Type safe: `uv run mypy src/`
 - [ ] Coverage >= 80% for new code
 
 ## Submitting Changes
