@@ -16,6 +16,39 @@ High-level planning for nvml-info features and improvements.
 
 ---
 
+## v0.1.x — Known Issues & Bug Fixes
+
+Found during a code review. Ordered by priority.
+
+**Correctness**
+- [ ] `nvmlShutdown()` is not called in a `finally`/context manager. If a query raises, NVML stays initialized and the init ref-count becomes unbalanced (`CUDA.is_available`, `CUDA._get_devices`, and every `_GPU` query). Introduce an NVML init/shutdown context manager.
+- [ ] `CUDA.get_available_GPU` raises `StopIteration` when no GPU matches. This is the wrong exception type and becomes `RuntimeError` inside generators. Use `LookupError` or a custom exception.
+- [ ] `_GPU.__eq__` assumes `other.uuid` exists and raises `AttributeError` for other types. Return `NotImplemented` for non-`_GPU` objects.
+- [ ] `nvmlDeviceGetName`/`nvmlDeviceGetUUID` return `bytes` on older `pynvml` versions, but `_GPU.uuid`/`name` are typed `str`. Decode when needed or pin the minimum `nvidia-ml-py` version.
+- [ ] `get_available_GPU` queries utilization several times per GPU (filter, then sort), and the value can change between calls. Query once and reuse the result.
+
+**Design**
+- [ ] `_GPU` memory properties (`free_memory_mb`, `total_memory_mb`, `used_memory_mb`, `memory_utilization`) each do a full init → handle lookup → shutdown cycle. Share one helper or a single memory-info call.
+- [ ] The 50% utilization threshold in `get_available_GPU` is hard-coded. Make it a parameter.
+- [ ] `CUDA.devices` is a snapshot taken at construction and never refreshed. Document this or add a `refresh()` method.
+- [ ] `Device` (pydantic model) is exported but not used by `CUDA`. Integrate it with `get_available_GPU` or document its intended use.
+- [ ] `get_available_GPU` does not follow PEP 8 naming (rename to `get_available_gpu` and keep a deprecated alias). `deviceCount` in `_get_devices` should be `device_count`.
+
+**Documentation**
+- [ ] `_GPU._get_free_memory` docstring says "size in bits", but the value is in bytes.
+- [ ] `_GPU.id` docstring says it depends on `CUDA_DEVICE_ORDER`, but the value is the NVML index (PCI bus order), which can differ from CUDA's default ordering.
+- [ ] README/ROADMAP claim "40+ tests"; verify and correct.
+- [ ] Replace the `yourusername` placeholder URLs in `pyproject.toml`.
+- [ ] Update the aspirational roadmap dates, which are now in the past.
+
+**Testing**
+- [ ] Most tests skip when no GPU is present, and `pynvml` is never mocked. Add mocked-NVML tests so CI without a GPU still covers the logic, including error paths and the `finally` cleanup.
+
+**Minor**
+- [ ] Remove redundant `int(round(...))` in `memory_utilization` (`round` already returns `int`).
+
+---
+
 ## v0.2.0 — Performance & Reliability (Q1 2025)
 
 **Optimization & caching**
